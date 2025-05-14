@@ -1,0 +1,58 @@
+---
+# Source: submariner-k8s-broker/templates/svc-acct.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: submariner-k8s-broker-client
+  labels:
+    heritage: "Helm"
+    release: "submariner-k8s-broker"
+    chart: submariner-k8s-broker-0.0.0
+    app: submariner-k8s-broker
+---
+# Source: submariner-k8s-broker/templates/svc-acct.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: submariner-k8s-broker-client-token
+  annotations:
+    kubernetes.io/service-account.name: submariner-k8s-broker-client
+type: kubernetes.io/service-account-token
+---
+# Source: submariner-k8s-broker/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submariner-k8s-broker-cluster
+  labels:
+    heritage: "Helm"
+    release: "submariner-k8s-broker"
+    chart: submariner-k8s-broker-0.0.0
+    app: submariner-k8s-broker
+rules:
+- apiGroups: ["submariner.io"]
+  resources: ["clusters", "endpoints"]
+  verbs: ["create", "get", "list", "watch", "patch", "update", "delete"]
+- apiGroups: ["lighthouse.submariner.io"]
+  resources: ["*"]
+  verbs: ["create", "get", "list", "watch", "patch", "update", "delete"]
+- apiGroups: ["discovery.k8s.io"]
+  resources: ["endpointslices", "endpointslices/restricted"]
+  verbs: ["create", "get", "list", "watch","patch", "update", "delete"]
+- apiGroups: ["multicluster.x-k8s.io"]
+  resources: ["*"]
+  verbs: ["create", "get", "list", "watch", "update", "delete"]
+---
+# Source: submariner-k8s-broker/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: submariner-k8s-broker-cluster
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: submariner-k8s-broker-cluster
+subjects:
+- kind: ServiceAccount
+  name: submariner-k8s-broker-client
+  namespace: default

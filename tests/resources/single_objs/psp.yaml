@@ -1,0 +1,26 @@
+apiVersion: policy/v1beta1
+kind: PodSecurityPolicy
+metadata:
+  name: example
+spec:
+  privileged: false  # 不允许特权容器
+  # 指定容器可以使用的卷类型
+  volumes:
+  - 'configMap'
+  - 'emptyDir'
+  - 'projected'
+  - 'secret'
+  - 'downwardAPI'
+  - 'persistentVolumeClaim'
+  hostNetwork: false  # 禁止使用主机网络
+  hostIPC: false      # 禁止使用主机的IPC命名空间
+  hostPID: false      # 禁止使用主机的PID命名空间
+  runAsUser:
+    rule: 'RunAsAny'  # 允许容器以任何用户ID运行
+  seLinux:
+    rule: 'RunAsAny'  # 允许容器使用任何SELinux上下文
+  supplementalGroups:
+    rule: 'RunAsAny'  # 允许容器使用任何附加组ID
+  fsGroup:
+    rule: 'RunAsAny'  # 允许容器使用任何文件系统组ID
+  readOnlyRootFilesystem: false  # 不要求根文件系统为只读

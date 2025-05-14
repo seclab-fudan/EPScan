@@ -1,0 +1,83 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: test_sa_role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["list"]
+  resourceNames: ["test_container"]
+
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["watch"]
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["watch"]
+  resourceNames: ["test_container"]
+
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["list"]
+
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["update"]
+  resourceNames: ["test_container"]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: test_sa_cluster_role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["patch"]
+
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["list"]
+
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["update"]
+
+- apiGroups: ["apps"]
+  resources: ["deployments"]
+  verbs: ["get"]
+  resourceNames: ["test_proj-operator"]
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test_sa
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: test_sa_role_binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: test_sa_role
+subjects:
+- kind: ServiceAccount
+  name: test_sa
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: test_sa_cluster_role_binding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: test_sa_cluster_role
+subjects:
+- kind: ServiceAccount
+  name: test_sa
+  namespace: default

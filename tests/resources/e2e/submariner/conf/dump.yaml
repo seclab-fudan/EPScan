@@ -1,0 +1,493 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+  creationTimestamp: "2024-05-16T03:33:51Z"
+  generation: 1
+  labels:
+    app: submariner-gateway
+    component: gateway
+  name: submariner-gateway
+  namespace: submariner-operator
+  ownerReferences:
+  - apiVersion: submariner.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Submariner
+    name: submariner
+    uid: 0fe017f9-38d1-4c50-807a-21322bc8637b
+  resourceVersion: "848"
+  uid: d9acd125-6dec-4ef6-9e52-5261b82a2f00
+spec:
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: submariner-gateway
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: submariner-gateway
+    spec:
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchLabels:
+                app: submariner-gateway
+            topologyKey: kubernetes.io/hostname
+      containers:
+      - command:
+        - submariner.sh
+        env:
+        - name: SUBMARINER_NAMESPACE
+          value: submariner-operator
+        - name: SUBMARINER_CLUSTERCIDR
+          value: 192.168.10.0/24
+        - name: SUBMARINER_SERVICECIDR
+          value: 192.168.20.0/24
+        - name: SUBMARINER_GLOBALCIDR
+          value: 242.1.2.0/24
+        - name: SUBMARINER_CLUSTERID
+          value: the-id-of-the-cluster
+        - name: SUBMARINER_COLORCODES
+          value: blue
+        - name: SUBMARINER_DEBUG
+          value: "false"
+        - name: SUBMARINER_NATENABLED
+          value: "true"
+        - name: AIR_GAPPED_DEPLOYMENT
+          value: "false"
+        - name: SUBMARINER_BROKER
+          value: k8s
+        - name: SUBMARINER_CABLEDRIVER
+          value: libreswan
+        - name: BROKER_K8S_APISERVER
+          value: 192.168.105.71:8443
+        - name: BROKER_K8S_APISERVERTOKEN
+          value: eyJhbGciOiJSUzI1NiIsImtpZCI6IjZ1Nk5NdGp0VnpYSmlKTXhHSFJXeC0zcTgxd1Z4d1VYd09EWTBmaVZTN3cifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJzdWJtYXJpbmVyLWs4cy1icm9rZXIiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoic3VibWFyaW5lci1rOHMtYnJva2VyLWNsaWVudC10b2tlbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJzdWJtYXJpbmVyLWs4cy1icm9rZXItY2xpZW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQudWlkIjoiZDkzYmQwMjAtMzBiMC00MzQ0LWI3NDUtYTg3ZjEzOWRjYTA3Iiwic3ViIjoic3lzdGVtOnNlcnZpY2VhY2NvdW50OnN1Ym1hcmluZXItazhzLWJyb2tlcjpzdWJtYXJpbmVyLWs4cy1icm9rZXItY2xpZW50In0.Y15_WEqtd5iz-Ba6CTlnL2MC7L3vjQNFFTXt0W453wxYP9X59z3nL-HIFQ6cpCxQsioledA437o-SIbNA4wHK3BFBd5NO6767rQUQjuBFYgtj8X0E6_WsUe4s_KF8qgpllo3lCbifhlCpw_lQdNKOFCICOV-H7XrFJkRIzQkKXvA3e-K9K9iAIeVHEB1IewpAEM7Kf49Il8lg-3T9JPAxPwlMgaQad0tJn-UxX_IMhyp0A9Jw4-TnibU9-xoyBt_7gHrLQLTK9uPI9jpfEr9JXzDdkpu3KM1lcya1Pg2fZdLACSgukPWq00ebq-XT6ui9LuX17xTKJ7Vag3BRJKrdg
+        - name: BROKER_K8S_REMOTENAMESPACE
+          value: submariner-k8s-broker
+        - name: BROKER_K8S_CA
+          value: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSURCakNDQWU2Z0F3SUJBZ0lCQVRBTkJna3Foa2lHOXcwQkFRc0ZBREFWTVJNd0VRWURWUVFERXdwdGFXNXAKYTNWaVpVTkJNQjRYRFRJME1ETXpNVEV4TWpjd04xb1hEVE0wTURNek1ERXhNamN3TjFvd0ZURVRNQkVHQTFVRQpBeE1LYldsdWFXdDFZbVZEUVRDQ0FTSXdEUVlKS29aSWh2Y05BUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBSzd4ClJxSWFFcytkZHRXMTZ1Q3liSUZQWjcvekZGWFQ0TVNIUmhPWWlUdEV1M3puVVZRSEFoTW1vRWZrcmt4OTNqSy8KZzRuUnFpL3NHN3BlOGpXWlpEZTliYU9vUnN5MTRJUXl0RjliNG9od0d6L2NWcncvSEhFQzRTRm5yTW9KSG42SwpjVVZBRnEzd2EycUNzWk15elJCc0J0bis0Z1VPVTFOZTNUb0dMRzc0SXM3R1FndWRScXhiekZERFNyN2p4OE1BCmI2U3NNUnROa0M2YzloeFo4TEhIbFRzdk9wU0FHL0ZValRxd2xHdVF2VU53L3A1czdLcVFaMlhDRXJSTmE0VWMKbHpabjlxZ0pzVUgraU1TdCtwaTZzeS9POVJ1YVVaUk9VMll0NkpISlFHakF5SENBRGRQL255T0JYRThmcU9jTwp1LzNWcEtqalArdjVmZEdzRnZjQ0F3RUFBYU5oTUY4d0RnWURWUjBQQVFIL0JBUURBZ0trTUIwR0ExVWRKUVFXCk1CUUdDQ3NHQVFVRkJ3TUNCZ2dyQmdFRkJRY0RBVEFQQmdOVkhSTUJBZjhFQlRBREFRSC9NQjBHQTFVZERnUVcKQkJSVXVVYzBqQVRhc3NWaGtPa25yTCtiSVh4RTBEQU5CZ2txaGtpRzl3MEJBUXNGQUFPQ0FRRUFwV2VIN0VlLwpSb0lLbE9XczlFRGVlNTdYU1IyTGljbDk2cFFRWitQdk56ZGp2ODFZejFtWUc0SkQwVmV5aDIzOGM2TlMzOGF1CkFFOWo2VVI5dHVRanhHTExocG0ySUN0YU8wSXl1NnUyS2NRWjhUUktydGtWa0htbC9qbExSbjFkU2FGcGowbDcKcWdiRWtNWDFFZE81MGd3RDl6RWVKRVcyREpjdXFHWEp0RW13aEtmTGxaUFVIdno5WkN6di8xSVZDYWRoY0hHUwpoSVpCN1g2MDFsSGl0MUdQT3M4R0ZpUWVtdUFxalhIb0hnSHVtMVBqdzYyT0hodGpKQVNaU2pnNjVtbG1naGtUCkxhRDNNL2U0RjM1eUFqQ3JMSFhnVFF1UVRIZG43SzlFY0hQbU80eUNCRWtGQjE3NVl1Wk5xUDg3WUNKb1lEUVkKVTB1V1Y2YWZHc25LRmc9PQotLS0tLUVORCBDRVJUSUZJQ0FURS0tLS0tCg==
+        - name: BROKER_K8S_INSECURE
+          value: "false"
+        - name: BROKER_K8S_SECRET
+        - name: CE_IPSEC_PSK
+          value: 2s3yCStHUwruNUM4z3sIfyLkb3jht22ObauU5I7aMJEfkNV0ZWwrIcGBqv1rWaAR
+        - name: CE_IPSEC_PSKSECRET
+        - name: CE_IPSEC_DEBUG
+          value: "false"
+        - name: SUBMARINER_HEALTHCHECKENABLED
+          value: "true"
+        - name: SUBMARINER_HEALTHCHECKINTERVAL
+          value: "1"
+        - name: SUBMARINER_HEALTHCHECKMAXPACKETLOSSCOUNT
+          value: "5"
+        - name: SUBMARINER_METRICSPORT
+          value: "32780"
+        - name: SUBMARINER_HALT_ON_CERT_ERROR
+          value: "false"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: CE_IPSEC_NATTPORT
+          value: "4500"
+        - name: CE_IPSEC_PREFERREDSERVER
+          value: "false"
+        - name: CE_IPSEC_FORCEENCAPS
+          value: "false"
+        image: quay.io/submariner/submariner-gateway:0.17.1
+        imagePullPolicy: IfNotPresent
+        name: submariner-gateway
+        ports:
+        - containerPort: 4500
+          hostPort: 4500
+          name: cable-encaps
+          protocol: UDP
+        - containerPort: 4490
+          hostPort: 4490
+          name: natt-discovery
+          protocol: UDP
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add:
+            - net_admin
+            drop:
+            - all
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/ipsec.d
+          name: ipsecd
+        - mountPath: /var/lib/ipsec/nss
+          name: ipsecnss
+        - mountPath: /lib/modules
+          name: libmodules
+          readOnly: true
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      nodeSelector:
+        submariner.io/gateway: "true"
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: submariner-gateway
+      serviceAccountName: submariner-gateway
+      terminationGracePeriodSeconds: 1
+      tolerations:
+      - operator: Exists
+      volumes:
+      - emptyDir: {}
+        name: ipsecd
+      - emptyDir: {}
+        name: ipsecnss
+      - hostPath:
+          path: /lib/modules
+          type: DirectoryOrCreate
+        name: libmodules
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 0
+  desiredNumberScheduled: 0
+  numberMisscheduled: 0
+  numberReady: 0
+  observedGeneration: 1
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+  creationTimestamp: "2024-05-16T03:33:51Z"
+  generation: 1
+  labels:
+    app: submariner-globalnet
+    component: globalnet
+  name: submariner-globalnet
+  namespace: submariner-operator
+  ownerReferences:
+  - apiVersion: submariner.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Submariner
+    name: submariner
+    uid: 0fe017f9-38d1-4c50-807a-21322bc8637b
+  resourceVersion: "870"
+  uid: f3f7ee2b-4d9a-4007-834a-eb353e9bd1e4
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: submariner-globalnet
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: submariner-globalnet
+        component: globalnet
+    spec:
+      containers:
+      - env:
+        - name: SUBMARINER_NAMESPACE
+          value: submariner-operator
+        - name: SUBMARINER_CLUSTERID
+          value: the-id-of-the-cluster
+        - name: SUBMARINER_METRICSPORT
+          value: "32781"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        image: quay.io/submariner/submariner-globalnet:0.17.1
+        imagePullPolicy: IfNotPresent
+        name: submariner-globalnet
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add:
+            - ALL
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /run/xtables.lock
+          name: host-run-xtables-lock
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      nodeSelector:
+        submariner.io/gateway: "true"
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: submariner-globalnet
+      serviceAccountName: submariner-globalnet
+      terminationGracePeriodSeconds: 2
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /run/xtables.lock
+          type: ""
+        name: host-run-xtables-lock
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 0
+  desiredNumberScheduled: 0
+  numberMisscheduled: 0
+  numberReady: 0
+  observedGeneration: 1
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+  creationTimestamp: "2024-05-16T03:33:51Z"
+  generation: 1
+  labels:
+    app: submariner-metrics-proxy
+    component: metrics
+  name: submariner-metrics-proxy
+  namespace: submariner-operator
+  ownerReferences:
+  - apiVersion: submariner.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Submariner
+    name: submariner
+    uid: 0fe017f9-38d1-4c50-807a-21322bc8637b
+  resourceVersion: "881"
+  uid: 5556af5a-da07-41a6-b68a-9f1b7f24498a
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: submariner-metrics-proxy
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: submariner-metrics-proxy
+        component: metrics
+    spec:
+      containers:
+      - args:
+        - "8080"
+        - $(NODE_IP)
+        - "32780"
+        command:
+        - /app/metricsproxy
+        env:
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        image: quay.io/submariner/nettest:0.17.1
+        imagePullPolicy: IfNotPresent
+        name: gateway-metrics-proxy
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      - args:
+        - "8081"
+        - $(NODE_IP)
+        - "32781"
+        command:
+        - /app/metricsproxy
+        env:
+        - name: NODE_IP
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: status.hostIP
+        image: quay.io/submariner/nettest:0.17.1
+        imagePullPolicy: IfNotPresent
+        name: globalnet-metrics-proxy
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        submariner.io/gateway: "true"
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      tolerations:
+      - operator: Exists
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 1
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 0
+  desiredNumberScheduled: 0
+  numberMisscheduled: 0
+  numberReady: 0
+  observedGeneration: 1
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  annotations:
+    deprecated.daemonset.template.generation: "1"
+  creationTimestamp: "2024-05-16T03:33:51Z"
+  generation: 1
+  labels:
+    app: submariner-routeagent
+    component: routeagent
+  name: submariner-routeagent
+  namespace: submariner-operator
+  ownerReferences:
+  - apiVersion: submariner.io/v1alpha1
+    blockOwnerDeletion: true
+    controller: true
+    kind: Submariner
+    name: submariner
+    uid: 0fe017f9-38d1-4c50-807a-21322bc8637b
+  resourceVersion: "875"
+  uid: 1ac7763f-2761-44e2-be59-33a05da06d7c
+spec:
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: submariner-routeagent
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: submariner-routeagent
+        component: routeagent
+    spec:
+      containers:
+      - command:
+        - submariner-route-agent.sh
+        env:
+        - name: SUBMARINER_NAMESPACE
+          value: submariner-operator
+        - name: SUBMARINER_CLUSTERID
+          value: the-id-of-the-cluster
+        - name: SUBMARINER_DEBUG
+          value: "false"
+        - name: SUBMARINER_CLUSTERCIDR
+          value: 192.168.10.0/24
+        - name: SUBMARINER_SERVICECIDR
+          value: 192.168.20.0/24
+        - name: SUBMARINER_GLOBALCIDR
+          value: 242.1.2.0/24
+        - name: SUBMARINER_NETWORKPLUGIN
+          value: generic
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        image: quay.io/submariner/submariner-route-agent:0.17.1
+        imagePullPolicy: IfNotPresent
+        name: submariner-routeagent
+        resources: {}
+        securityContext:
+          allowPrivilegeEscalation: true
+          capabilities:
+            add:
+            - ALL
+          privileged: true
+          readOnlyRootFilesystem: false
+          runAsNonRoot: false
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /sys
+          name: host-sys
+          readOnly: true
+        - mountPath: /run/xtables.lock
+          name: host-run-xtables-lock
+        - mountPath: /run/openvswitch
+          name: host-run-openvswitch
+        - mountPath: /run/ovn-ic
+          name: host-run-ovn-ic
+      dnsPolicy: ClusterFirstWithHostNet
+      hostNetwork: true
+      initContainers:
+      - command:
+        - submariner-route-agent.sh
+        env:
+        - name: SUBMARINER_WAITFORNODE
+          value: "true"
+        - name: NODE_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: spec.nodeName
+        image: quay.io/submariner/submariner-route-agent:0.17.1
+        imagePullPolicy: IfNotPresent
+        name: submariner-routeagent-init
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: submariner-routeagent
+      serviceAccountName: submariner-routeagent
+      terminationGracePeriodSeconds: 1
+      tolerations:
+      - operator: Exists
+      volumes:
+      - hostPath:
+          path: /run/xtables.lock
+          type: ""
+        name: host-run-xtables-lock
+      - hostPath:
+          path: /run/openvswitch
+          type: DirectoryOrCreate
+        name: host-run-openvswitch
+      - hostPath:
+          path: /sys
+          type: ""
+        name: host-sys
+      - hostPath:
+          path: /run/ovn-ic
+          type: DirectoryOrCreate
+        name: host-run-ovn-ic
+  updateStrategy:
+    rollingUpdate:
+      maxSurge: 0
+      maxUnavailable: 100%
+    type: RollingUpdate
+status:
+  currentNumberScheduled: 3
+  desiredNumberScheduled: 3
+  numberMisscheduled: 0
+  numberReady: 0
+  numberUnavailable: 3
+  observedGeneration: 1
+  updatedNumberScheduled: 3

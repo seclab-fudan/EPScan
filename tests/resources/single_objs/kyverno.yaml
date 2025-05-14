@@ -1,0 +1,18 @@
+apiVersion: kyverno.io/v1
+kind: ClusterPolicy
+metadata:
+  name: require-department-label
+spec:
+  validationFailureAction: enforce # 这意味着违反策略的资源将被拒绝
+  rules:
+    - name: check-for-department-label
+      match:
+        resources:
+          kinds:
+            - Pod
+      validate:
+        message: "缺少 'department' 标签"
+        pattern:
+          metadata:
+            labels:
+              department: "?*"

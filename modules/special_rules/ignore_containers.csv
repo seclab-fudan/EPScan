@@ -1,0 +1,3 @@
+﻿project,pod_name,container_name,reason
+submariner,submariner-metrics-proxy,gateway-metrics-proxy,not golang
+submariner,submariner-metrics-proxy,globalnet-metrics-proxy,not golang

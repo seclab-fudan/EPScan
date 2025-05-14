@@ -1,0 +1,57 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test_container
+spec:
+  containers:
+    - name: container-has-cmd
+      image: nginx
+      command: [ "nginx", "-g", "daemon off;" ]
+
+    - name: container-has-cmd-args
+      image: nginx
+      command: [ "nginx" ]
+      args: [ "-g", "daemon off;" ]
+
+    - name: container-no-cmd
+      image: nginx
+
+    - name: container-cmd-use-absolute
+      image: nginx
+      command: [ "/usr/bin/nginx" ]
+
+    - name: container-use-tini
+      image: kustomize-controller
+      command: [ "/sbin/tini", "--", "kustomize-controller" ]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test_container_deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: test_container
+  template:
+    metadata:
+      labels:
+        app: test_container
+    spec:
+      containers:
+        - name: container
+          image: nginx
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: test_container_cronjob
+spec:
+  schedule: "*/1 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: container
+              image: nginx

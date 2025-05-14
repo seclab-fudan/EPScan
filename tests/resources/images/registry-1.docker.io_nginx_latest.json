@@ -1,0 +1,28 @@
+{
+  "architecture": "amd64",
+  "config": {
+    "ExposedPorts": {
+      "80/tcp": {}
+    },
+    "Env": [
+      "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+      "NGINX_VERSION=1.25.4",
+      "NJS_VERSION=0.8.3",
+      "PKG_RELEASE=1~bookworm"
+    ],
+    "Entrypoint": [
+      "/docker-entrypoint.sh"
+    ],
+    "Cmd": [
+      "nginx",
+      "-g",
+      "daemon off;"
+    ],
+    "Labels": {
+      "maintainer": "NGINX Docker Maintainers <docker-maint@nginx.com>"
+    },
+    "StopSignal": "SIGQUIT",
+    "ArgsEscaped": true,
+    "OnBuild": null
+  }
+}

@@ -1,0 +1,27 @@
+[project]
+name = "ep-scan"
+version = "0.1.0"
+description = "An automated tool for detecting excessive RBAC permissions in Kubernetes applications."
+authors = [
+    { name = "Yue Gu", email = "admin@kaaass.net" }
+]
+requires-python = ">=3.10"
+
+dependencies = [
+    "colorama>=0.4.6",
+    "PyYAML>=6.0.1",
+    "requests>=2.31.0",
+    "tinydb>=4.8.0",
+    "tqdm>=4.66.1",
+    "typer==0.9.0",
+    "click==8.1.7",
+    "python-dxf>=11.4.0",
+    "docker>=7.0.0",
+    "openai>=1.28.1",
+    "socksio>=1.0.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]

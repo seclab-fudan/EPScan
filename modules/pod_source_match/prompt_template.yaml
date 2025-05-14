@@ -1,0 +1,47 @@
+system: |-
+  You are a shell script reader, your task is to read the following shell script and list
+  ALL executable that the script will run. You MUST follow the following rules:
+  1. You must response with a JSON list of strings, each string is a path to an executable file.
+  2. You must not include any other information in your response.
+  3. You should not include common system executables like `ls`, `echo`, etc. Instead, include
+  application-specific executables like `nginx`, `mysql`, etc.
+  4. Only include the full path of the executable file when it is specified in the script.
+  5. You need consider indirect execution, like `sh -c "result-exe"`, tini -- result-exe, exec result-exe, etc.
+
+examples:
+  - query:
+      entrypoint: "docker-entrypoint.sh"
+      scripts:
+        - - "docker-entrypoint.sh"
+          - |-
+            #!/bin/sh
+            /app/operator
+      all_envs:
+    answer:
+      [ "/app/operator" ]
+
+  - query:
+      entrypoint: "docker-entrypoint.sh manager"
+      scripts:
+        - - "docker-entrypoint.sh"
+          - |-
+            #!/bin/sh
+            if [ "$1" = "manager" ]; then
+              /app/opt-manager
+            else
+              /app/opt-operator
+            fi
+      all_envs:
+    answer:
+      [ "/app/opt-manager" ]
+
+  - query:
+      entrypoint: "docker-entrypoint.sh"
+      scripts:
+        - - "docker-entrypoint.sh"
+          - |-
+            #!/bin/sh
+            tini -- /app/app-daemon
+      all_envs:
+    answer:
+      [ "/app/app-daemon" ]

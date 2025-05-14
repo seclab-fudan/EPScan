@@ -1,0 +1,12 @@
+.idea/
+venv/
+small_dataset/
+*.pickle
+*.csv
+*.json
+__pycache__/
+.DS_Store
+*.log
+openai.key
+cache
+github.token

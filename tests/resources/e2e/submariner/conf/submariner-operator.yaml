@@ -1,0 +1,970 @@
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: submariner-operator
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: submariner-gateway
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: submariner-routeagent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: submariner-globalnet
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: submariner-lighthouse-agent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: submariner-lighthouse-coredns
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: submariner-operator-token
+  annotations:
+    kubernetes.io/service-account.name: submariner-operator
+type: kubernetes.io/service-account-token
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: submariner-gateway-token
+  annotations:
+    kubernetes.io/service-account.name: submariner-gateway
+type: kubernetes.io/service-account-token
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: submariner-routeagent-token
+  annotations:
+    kubernetes.io/service-account.name: submariner-routeagent
+type: kubernetes.io/service-account-token
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: submariner-globalnet-token
+  annotations:
+    kubernetes.io/service-account.name: submariner-globalnet
+type: kubernetes.io/service-account-token
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: submariner-lighthouse-agent-token
+  annotations:
+    kubernetes.io/service-account.name: submariner-lighthouse-agent
+type: kubernetes.io/service-account-token
+---
+# Source: submariner-operator/templates/svc-acct.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: submariner-lighthouse-coredns-token
+  annotations:
+    kubernetes.io/service-account.name: submariner-lighthouse-coredns
+type: kubernetes.io/service-account-token
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-operator
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+rules:
+  # submariner-operator updates the config map of core-dns to forward requests to
+  # clusterset.local to Lighthouse DNS, also looks at existing configmaps
+  # to figure out network settings
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+      - watch
+  - apiGroups:  # pods, services and nodes are looked up to figure out network settings
+      - ""
+    resources:
+      - pods
+      - services
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - operator.openshift.io
+    resources:
+      - dnses
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - config.openshift.io
+    resources:
+      - networks
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - ""
+    resources:
+      - namespaces
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+    verbs:
+      - get
+      - create
+  - apiGroups:
+      - apps
+    resources:
+      - daemonsets
+    verbs:
+      - get
+      - list
+      - watch
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-operator:gateway
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - create
+      - update
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+  - apiGroups:  # pods and services are looked up to figure out network settings
+      - ""
+    resources:
+      - pods
+      - services
+      - nodes
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - operator.openshift.io
+    resources:
+      - dnses
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - config.openshift.io
+    resources:
+      - networks
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - submariner.io
+    resources:
+      - endpoints
+      - gateways
+      - clusters
+    verbs:
+      - get
+      - list
+      - watch
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-operator:routeagent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - configmaps
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - apiextensions.k8s.io
+    resources:
+      - customresourcedefinitions
+    verbs:
+      - get
+      - list
+      - create
+      - update
+      - delete
+  - apiGroups:  # pods and services are looked up to figure out network settings
+      - ""
+    resources:
+      - pods
+      - services
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - operator.openshift.io
+    resources:
+      - dnses
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - config.openshift.io
+    resources:
+      - networks
+    verbs:
+      - get
+      - list
+  - apiGroups:
+      - ""
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+    resources:
+      - nodes
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-operator:lighthouse-agent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - namespaces
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+      - endpointslices/restricted
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+      - deletecollection
+  - apiGroups:
+      - submariner.io
+    resources:
+      - "gateways"
+      - "globalingressips"
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - multicluster.x-k8s.io
+    resources:
+      - "*"
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: submariner-operator:lighthouse-coredns
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - services
+      - namespaces
+      - endpoints
+    verbs:
+      - get
+      - list
+      - watch
+      - update
+  - apiGroups:
+      - discovery.k8s.io
+    resources:
+      - endpointslices
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+      - deletecollection
+  - apiGroups:
+      - submariner.io
+    resources:
+      - "gateways"
+      - "submariners"
+    verbs:
+      - get
+      - list
+      - watch
+  - apiGroups:
+      - multicluster.x-k8s.io
+    resources:
+      - "*"
+    verbs:
+      - create
+      - get
+      - list
+      - watch
+      - update
+      - delete
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-operator
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+subjects:
+  - kind: ServiceAccount
+    name: submariner-operator
+    namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-operator
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-operator:gateway
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-operator:gateway
+subjects:
+  - kind: ServiceAccount
+    name: submariner-gateway
+    namespace: default
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-operator:routeagent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-operator:routeagent
+subjects:
+  - kind: ServiceAccount
+    name: submariner-routeagent
+    namespace: default
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-operator:globalnet
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-operator:globalnet
+subjects:
+- kind: ServiceAccount
+  name: submariner-globalnet
+  namespace: default
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-operator:lighthouse-agent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-operator:lighthouse-agent
+subjects:
+  - kind: ServiceAccount
+    name: submariner-lighthouse-agent
+    namespace: default
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: submariner-operator:lighthouse-coredns
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: submariner-operator:lighthouse-coredns
+subjects:
+  - kind: ServiceAccount
+    name: submariner-lighthouse-coredns
+    namespace: default
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submariner-operator
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  - services
+  - services/finalizers
+  - endpoints
+  - persistentvolumeclaims
+  - events
+  - configmaps
+  - secrets
+  verbs:
+  - '*'
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  - daemonsets
+  - replicasets
+  - statefulsets
+  verbs:
+  - '*'
+- apiGroups:
+  - monitoring.coreos.com
+  resources:
+  - servicemonitors
+  verbs:
+  - get
+  - create
+- apiGroups:
+  - apps
+  resourceNames:
+  - submariner-operator
+  resources:
+  - deployments/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - ""
+  resources:
+  - pods
+  verbs:
+  - get
+- apiGroups:
+  - apps
+  resources:
+  - replicasets
+  verbs:
+  - get
+- apiGroups:
+  - submariner.io
+  resources:
+  - '*'
+  - servicediscoveries
+  verbs:
+  - '*'
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submariner-operator:gateway
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+rules:
+- apiGroups:
+    - ""
+  resources:
+    - pods
+    - services
+    - services/finalizers
+    - endpoints
+    - persistentvolumeclaims
+    - events
+    - configmaps
+    - secrets
+  verbs:
+    - '*'
+- apiGroups:
+    - apps
+  resources:
+    - deployments
+    - daemonsets
+    - replicasets
+    - statefulsets
+  verbs:
+    - '*'
+- apiGroups:
+    - monitoring.coreos.com
+  resources:
+    - servicemonitors
+  verbs:
+    - get
+    - create
+- apiGroups:
+    - apps
+  resourceNames:
+    - submariner-operator
+  resources:
+    - deployments/finalizers
+  verbs:
+    - update
+- apiGroups:
+    - ""
+  resources:
+    - pods
+  verbs:
+    - get
+- apiGroups:
+    - apps
+  resources:
+    - replicasets
+  verbs:
+    - get
+- apiGroups:
+    - submariner.io
+  resources:
+    - '*'
+    - servicediscoveries
+  verbs:
+    - '*'
+- apiGroups:
+    - lighthouse.submariner.io
+  resources:
+    - '*'
+    - serviceexports
+  verbs:
+    - create
+    - delete
+    - get
+    - list
+    - patch
+    - update
+    - watch
+- apiGroups:
+    - coordination.k8s.io
+  resources:
+    - leases
+  verbs:
+    - get
+    - list
+    - watch
+    - create
+    - update
+    - delete
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submariner-operator:routeagent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+      - services
+      - services/finalizers
+      - endpoints
+      - persistentvolumeclaims
+      - events
+      - configmaps
+      - secrets
+    verbs:
+      - '*'
+  - apiGroups:
+      - apps
+    resources:
+      - deployments
+      - daemonsets
+      - replicasets
+      - statefulsets
+    verbs:
+      - '*'
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+    verbs:
+      - get
+      - create
+  - apiGroups:
+      - apps
+    resourceNames:
+      - submariner-operator
+    resources:
+      - deployments/finalizers
+    verbs:
+      - update
+  - apiGroups:
+      - ""
+    resources:
+      - pods
+    verbs:
+      - get
+  - apiGroups:
+      - apps
+    resources:
+      - replicasets
+    verbs:
+      - get
+  - apiGroups:
+      - submariner.io
+    resources:
+      - '*'
+      - servicediscoveries
+    verbs:
+      - '*'
+  - apiGroups:
+      - lighthouse.submariner.io
+    resources:
+      - '*'
+      - serviceexports
+    verbs:
+      - create
+      - delete
+      - get
+      - list
+      - patch
+      - update
+      - watch
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: submariner-metrics-reader
+  namespace: default
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "services", "endpoints"]
+    verbs: ["get", "list", "watch"]
+---
+# Source: submariner-operator/templates/rbac.yaml
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: submariner-operator
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+subjects:
+- kind: ServiceAccount
+  name: submariner-operator
+roleRef:
+  kind: Role
+  name: submariner-operator
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: submariner-operator:gateway
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: submariner-operator:gateway
+subjects:
+- kind: ServiceAccount
+  name: submariner-gateway
+  namespace: default
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: submariner-operator:routeagent
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: submariner-operator:routeagent
+subjects:
+- kind: ServiceAccount
+  name: submariner-routeagent
+  namespace: default
+---
+# Source: submariner-operator/templates/rbac.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-submariner-metrics
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-k8s
+    namespace: openshift-monitoring
+roleRef:
+  kind: Role
+  name: submariner-metrics-reader
+  apiGroup: rbac.authorization.k8s.io
+---
+# Source: submariner-operator/templates/operator-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    heritage: "Helm"
+    release: "submariner-operator"
+    chart: submariner-operator-0.0.0
+    app: submariner-operator
+    component: gateway
+  name: submariner-operator
+spec:
+  progressDeadlineSeconds: 600
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      name: submariner-operator
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        name: submariner-operator
+    spec:
+      containers:
+      - command:
+        - submariner-operator
+        env:
+        - name: WATCH_NAMESPACE
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              apiVersion: v1
+              fieldPath: metadata.name
+        - name: OPERATOR_NAME
+          value: submariner-operator
+        image: quay.io/submariner/submariner-operator:0.14.0
+        imagePullPolicy: IfNotPresent
+        name: submariner-operator
+        resources: {}
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      serviceAccount: submariner-operator
+      serviceAccountName: submariner-operator
+      terminationGracePeriodSeconds: 30
+---
+# Source: submariner-operator/templates/submariner.yaml
+apiVersion: submariner.io/v1alpha1
+kind: Submariner
+metadata:
+  name: submariner
+  namespace: submariner-operator
+spec:
+  broker: k8s
+  brokerK8sApiServer: example.k8s.apiserver
+  brokerK8sApiServerToken: test
+  brokerK8sCA: 
+  brokerK8sRemoteNamespace: xyz
+  brokerK8sInsecure: false
+  ceIPSecDebug: false
+  ceIPSecForceUDPEncaps: false
+  ceIPSecIKEPort: 500
+  ceIPSecNATTPort: 4500
+  ceIPSecPSK: 
+  clusterCIDR: ""
+  clusterID: 
+  colorCodes: blue
+  debug: false
+  loadBalancerEnabled: false
+  namespace: default
+  natEnabled: false
+  repository: quay.io/submariner
+  version: 
+  serviceCIDR: ""
+  globalCIDR: ""
+  serviceDiscoveryEnabled: true
+  cableDriver: libreswan
+  connectionHealthCheck:
+    enabled: true
+    intervalSeconds: 1
+    maxPacketLossCount: 5

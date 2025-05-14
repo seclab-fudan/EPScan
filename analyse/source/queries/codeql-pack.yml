@@ -1,0 +1,7 @@
+---
+library: false
+warnOnImplicitThis: false
+name: kaaass/k8s-app-scan
+version: 1.0.0
+dependencies:
+  codeql/go-all: ^0.7.11

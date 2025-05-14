@@ -1,0 +1,118 @@
+---
+# Source: kubescape/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kubescape-discovery
+  labels:
+    helm.sh/chart: kubescape-1.0.0
+    app.kubernetes.io/name: kubescape
+    app.kubernetes.io/instance: kubescape
+    app.kubernetes.io/version: "v1.0.128"
+    app.kubernetes.io/managed-by: Helm
+---
+# Source: kubescape/templates/clusterrole.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: kubescape
+  labels:
+    helm.sh/chart: kubescape-1.0.0
+    app.kubernetes.io/name: kubescape
+    app.kubernetes.io/instance: kubescape
+    app.kubernetes.io/version: "v1.0.128"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["get", "list", "describe"]
+---
+# Source: kubescape/templates/clusterrolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: kubescape
+  labels:
+    helm.sh/chart: kubescape-1.0.0
+    app.kubernetes.io/name: kubescape
+    app.kubernetes.io/instance: kubescape
+    app.kubernetes.io/version: "v1.0.128"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubescape
+subjects:
+  - kind: ServiceAccount
+    name: kubescape-discovery
+    namespace: "default"
+---
+# Source: kubescape/templates/role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: kubescape
+  labels:
+    helm.sh/chart: kubescape-1.0.0
+    app.kubernetes.io/name: kubescape
+    app.kubernetes.io/instance: kubescape
+    app.kubernetes.io/version: "v1.0.128"
+    app.kubernetes.io/managed-by: Helm
+rules:
+  - apiGroups: ["*"]
+    resources: ["*"]
+    verbs: ["get", "list", "describe"]
+---
+# Source: kubescape/templates/rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: kubescape
+  labels:
+    helm.sh/chart: kubescape-1.0.0
+    app.kubernetes.io/name: kubescape
+    app.kubernetes.io/instance: kubescape
+    app.kubernetes.io/version: "v1.0.128"
+    app.kubernetes.io/managed-by: Helm
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: kubescape
+subjects:
+  - kind: ServiceAccount
+    name: kubescape-discovery
+    namespace: "default"
+---
+# Source: kubescape/templates/cronjob.yaml
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: kubescape
+  labels:
+    helm.sh/chart: kubescape-1.0.0
+    app.kubernetes.io/name: kubescape
+    app.kubernetes.io/instance: kubescape
+    app.kubernetes.io/version: "v1.0.128"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  schedule: "* * 1 * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: kubescape
+            image: "quay.io/armosec/kubescape:latest"
+            imagePullPolicy: Always
+            command: ["/bin/sh", "-c"]
+            args: ["kubescape scan framework nsa --submit"]
+            volumeMounts:
+            - name: kubescape-config-volume
+              mountPath: /root/.kubescape/config.json
+              subPath: config.json
+          restartPolicy: OnFailure
+          serviceAccountName: kubescape-discovery
+          volumes:
+          - name: kubescape-config-volume
+            configMap:
+              name: kubescape-configmap
